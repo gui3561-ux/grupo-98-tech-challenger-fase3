@@ -21,21 +21,6 @@ env/
 *.env
 !*.env.example
 
-# Model artifacts
-models/*
-!models/.gitkeep
-*.onnx
-*.joblib
-*.pkl
-*.pkl.gz
-
-# Data artifacts
-data/*
-!data/.gitkeep
-reports/*
-!reports/.gitkeep
-*.csv
-
 # IDEs / OS
 .idea/
 .vscode/

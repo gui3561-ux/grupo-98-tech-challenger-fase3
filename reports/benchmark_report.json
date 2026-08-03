@@ -1,0 +1,16 @@
+{
+  "native_sklearn": {
+    "mean_ms": 14.3106,
+    "p95_ms": 14.748,
+    "min_ms": 11.5399,
+    "max_ms": 183.0315
+  },
+  "optimized_onnx": {
+    "mean_ms": 0.0143,
+    "p95_ms": 0.0172,
+    "min_ms": 0.0118,
+    "max_ms": 0.3313
+  },
+  "speedup_x": 1004.1431,
+  "n_runs": 200
+}
