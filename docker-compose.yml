@@ -1,0 +1,52 @@
+services:
+  api:
+    build: .
+    container_name: urgency_api
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_DIR=/app/models
+      - DATA_DIR=/app/data
+      - REPORTS_DIR=/app/reports
+      - N_SAMPLES=2000
+    networks:
+      - urgency-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: urgency_prometheus
+    volumes:
+      - ./metrics/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - api
+    networks:
+      - urgency-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: urgency_grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./metrics/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./metrics/grafana/provisioning.yml:/etc/grafana/provisioning/dashboards/provisioning.yml:ro
+      - ./metrics/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - urgency-net
+
+networks:
+  urgency-net:
+    driver: bridge
