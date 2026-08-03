@@ -22,15 +22,18 @@ env/
 !*.env.example
 
 # Model artifacts
-models/
+models/*
+!models/.gitkeep
 *.onnx
 *.joblib
 *.pkl
 *.pkl.gz
 
 # Data artifacts
-data/
-reports/
+data/*
+!data/.gitkeep
+reports/*
+!reports/.gitkeep
 *.csv
 
 # IDEs / OS
