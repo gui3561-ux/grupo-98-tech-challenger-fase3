@@ -1,0 +1,24 @@
+{
+  "dataset": "laudos_sinteticos",
+  "path": "data/laudos.csv",
+  "n_rows": 2000,
+  "n_unique_texts": 107,
+  "text_diversity_ratio": 0.0535,
+  "classes": [
+    "normal",
+    "atencao",
+    "urgente"
+  ],
+  "class_counts": {
+    "normal": 1000,
+    "atencao": 600,
+    "urgente": 400
+  },
+  "imbalance_ratio": 2.5,
+  "has_native_urgency_target": true,
+  "char_len_mean": 42.9,
+  "word_len_mean": 5.4,
+  "leakage_train_test_overlap_texts": 94,
+  "leakage_test_rows_affected_pct": 0.995,
+  "random_state": 42
+}

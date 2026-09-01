@@ -1,0 +1,118 @@
+{
+  "laudos_naive": {
+    "dataset": "laudos",
+    "variant": "naive_split",
+    "n_train": 1600,
+    "n_test": 400,
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "weighted_f1": 1.0,
+    "per_class_f1": {
+      "atencao": 1.0,
+      "normal": 1.0,
+      "urgente": 1.0,
+      "macro avg": 1.0,
+      "weighted avg": 1.0
+    },
+    "per_class_recall": {
+      "atencao": 1.0,
+      "normal": 1.0,
+      "urgente": 1.0,
+      "macro avg": 1.0,
+      "weighted avg": 1.0
+    },
+    "train_time_s": 0.193,
+    "inference_latency_ms_mean": 13.7769,
+    "inference_latency_ms_p95": 14.3248,
+    "model_size_kb": 598.6
+  },
+  "laudos_dedup": {
+    "dataset": "laudos",
+    "variant": "dedup_split",
+    "n_train": 85,
+    "n_test": 22,
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "weighted_f1": 1.0,
+    "per_class_f1": {
+      "atencao": 1.0,
+      "normal": 1.0,
+      "urgente": 1.0,
+      "macro avg": 1.0,
+      "weighted avg": 1.0
+    },
+    "per_class_recall": {
+      "atencao": 1.0,
+      "normal": 1.0,
+      "urgente": 1.0,
+      "macro avg": 1.0,
+      "weighted avg": 1.0
+    },
+    "train_time_s": 0.133,
+    "inference_latency_ms_mean": 13.7659,
+    "inference_latency_ms_p95": 14.1704,
+    "model_size_kb": 520.0
+  },
+  "medabs_official": {
+    "dataset": "medical_abstracts",
+    "variant": "official_split",
+    "n_train": 11550,
+    "n_test": 2888,
+    "accuracy": 0.4744,
+    "macro_f1": 0.4622,
+    "weighted_f1": 0.4706,
+    "per_class_f1": {
+      "cardiovascular diseases": 0.5896,
+      "digestive system diseases": 0.3434,
+      "general pathological conditions": 0.3635,
+      "neoplasms": 0.6326,
+      "nervous system diseases": 0.3817,
+      "macro avg": 0.4622,
+      "weighted avg": 0.4706
+    },
+    "per_class_recall": {
+      "cardiovascular diseases": 0.623,
+      "digestive system diseases": 0.3244,
+      "general pathological conditions": 0.3694,
+      "neoplasms": 0.6461,
+      "nervous system diseases": 0.3351,
+      "macro avg": 0.4596,
+      "weighted avg": 0.4744
+    },
+    "train_time_s": 21.002,
+    "inference_latency_ms_mean": 13.8498,
+    "inference_latency_ms_p95": 14.3374,
+    "model_size_kb": 128658.9
+  },
+  "medabs_clean": {
+    "dataset": "medical_abstracts",
+    "variant": "clean_split",
+    "n_train": 11550,
+    "n_test": 1878,
+    "accuracy": 0.7295,
+    "macro_f1": 0.7118,
+    "weighted_f1": 0.7257,
+    "per_class_f1": {
+      "cardiovascular diseases": 0.8172,
+      "digestive system diseases": 0.6713,
+      "general pathological conditions": 0.6217,
+      "neoplasms": 0.8459,
+      "nervous system diseases": 0.6028,
+      "macro avg": 0.7118,
+      "weighted avg": 0.7257
+    },
+    "per_class_recall": {
+      "cardiovascular diseases": 0.8578,
+      "digestive system diseases": 0.5843,
+      "general pathological conditions": 0.649,
+      "neoplasms": 0.8721,
+      "nervous system diseases": 0.5099,
+      "macro avg": 0.6946,
+      "weighted avg": 0.7295
+    },
+    "train_time_s": 20.894,
+    "inference_latency_ms_mean": 13.838,
+    "inference_latency_ms_p95": 14.2619,
+    "model_size_kb": 128658.9
+  }
+}
