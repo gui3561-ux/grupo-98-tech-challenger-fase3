@@ -1,0 +1,89 @@
+{
+  "recommended_model": "LogisticRegression",
+  "recommended_optimization": "ONNX Runtime (mesma técnica já usada em produção)",
+  "native_vs_onnx": {
+    "RandomForest": {
+      "latência nativa (ms, média)": 13.7459,
+      "latência nativa p95 (ms)": 14.1792,
+      "latência ONNX (ms, média)": 0.1391,
+      "latência ONNX p95 (ms)": 0.2619,
+      "speedup ONNX": 98.82,
+      "tamanho nativo (KB)": 128658.9,
+      "tamanho ONNX (KB)": 79985.6
+    },
+    "LogisticRegression": {
+      "latência nativa (ms, média)": 0.394,
+      "latência nativa p95 (ms)": 0.4476,
+      "latência ONNX (ms, média)": 0.0595,
+      "latência ONNX p95 (ms)": 0.0851,
+      "speedup ONNX": 6.62,
+      "tamanho nativo (KB)": 388.7,
+      "tamanho ONNX (KB)": 237.7
+    }
+  },
+  "latency_decomposition": {
+    "RandomForest": {
+      "tfidf_transform_ms": {
+        "mean": 0.4206,
+        "p50": 0.423,
+        "p95": 0.5166,
+        "p99": 0.5614
+      },
+      "classifier_predict_ms": {
+        "mean": 13.3282,
+        "p50": 13.5981,
+        "p95": 13.7329,
+        "p99": 13.8358
+      },
+      "pipeline_predict_ms": {
+        "mean": 13.7459,
+        "p50": 14.0065,
+        "p95": 14.1792,
+        "p99": 14.3499
+      }
+    },
+    "LogisticRegression": {
+      "tfidf_transform_ms": {
+        "mean": 0.2863,
+        "p50": 0.2882,
+        "p95": 0.3512,
+        "p99": 0.3805
+      },
+      "classifier_predict_ms": {
+        "mean": 0.0944,
+        "p50": 0.0938,
+        "p95": 0.099,
+        "p99": 0.1069
+      },
+      "pipeline_predict_ms": {
+        "mean": 0.394,
+        "p50": 0.3965,
+        "p95": 0.4476,
+        "p99": 0.483
+      }
+    }
+  },
+  "cold_start": {
+    "RandomForest": {
+      "cold_start_ms_runs": [
+        13.117,
+        14.651,
+        15.59,
+        12.118,
+        14.491
+      ],
+      "cold_start_ms_mean": 13.994
+    },
+    "LogisticRegression": {
+      "cold_start_ms_runs": [
+        0.734,
+        0.734,
+        0.717,
+        0.651,
+        0.818
+      ],
+      "cold_start_ms_mean": 0.731
+    }
+  },
+  "rationale": "LogisticRegression já vence o baseline em qualidade e é 331x menor / 35x mais rápido nativamente; a conversão ONNX do pipeline inteiro (TF-IDF + classificador) ainda entrega um ganho real de 6.88x nesse modelo (menor que os 139.9x do RF, mas não desprezível) porque o TF-IDF domina o tempo nativo do LogisticRegression (~74%) e o ONNX otimiza o pipeline completo, não só o classificador"
+}

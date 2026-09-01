@@ -1,0 +1,34 @@
+{
+  "dataset": "medical_abstracts_tc_corpus",
+  "source": "https://github.com/sebischair/Medical-Abstracts-TC-Corpus (via mirror HF TimSchopf/medical_abstracts)",
+  "n_rows_train": 11550,
+  "n_rows_test": 2888,
+  "n_rows_total": 14438,
+  "n_unique_texts": 11227,
+  "text_diversity_ratio": 0.7776,
+  "classes": [
+    "general pathological conditions",
+    "neoplasms",
+    "cardiovascular diseases",
+    "nervous system diseases",
+    "digestive system diseases"
+  ],
+  "class_counts": {
+    "general pathological conditions": 4805,
+    "neoplasms": 3163,
+    "cardiovascular diseases": 3051,
+    "nervous system diseases": 1925,
+    "digestive system diseases": 1494
+  },
+  "imbalance_ratio": 3.22,
+  "has_native_urgency_target": false,
+  "target_semantics": "especialidade/sistema clínico do abstract, não gravidade/urgência",
+  "char_len_mean": 1230.7,
+  "word_len_mean": 179.9,
+  "duplicate_rows_pct_corpus": 0.4253,
+  "texts_with_inconsistent_label": 2929,
+  "leakage_train_test_overlap_texts": 988,
+  "leakage_test_rows_affected_pct": 0.3497,
+  "leakage_overlap_same_label_pct": 0.0,
+  "random_state": 42
+}
