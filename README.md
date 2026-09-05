@@ -129,8 +129,8 @@ adequada é **Real-Time síncrono** — o médico ou o sistema de prontuário
 │   └── grafana/                      # provisionamento (datasource + provider)
 ├── docker-compose.yml                # api + prometheus + grafana
 ├── Dockerfile                        # multi-stage otimizado
-├── requirements.txt
-├── pyproject.toml                    # ruff + pytest
+├── pyproject.toml                    # deps (uv) + ruff + pytest
+├── uv.lock
 ├── .env.example
 └── README.md
 ```
@@ -158,20 +158,20 @@ O entrypoint detecta a ausência do modelo ONNX e executa o pipeline completo
 
 ### Opção B — Ambiente virtual (desenvolvimento)
 
+Requer o [uv](https://docs.astral.sh/uv/) instalado.
+
 ```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+uv sync --group dev
 cp .env.example .env
 
 # Executar o pipeline de ML
-python -m src.cli.main generate-data
-python -m src.cli.main train
-python -m src.cli.main convert-onnx
-python -m src.cli.main benchmark
+uv run python -m src.cli.main generate-data
+uv run python -m src.cli.main train
+uv run python -m src.cli.main convert-onnx
+uv run python -m src.cli.main benchmark
 
 # Subir a API
-uvicorn src.api.main:app --reload
+uv run uvicorn src.api.main:app --reload
 ```
 
 ---

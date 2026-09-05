@@ -1,3 +1,53 @@
+[project]
+name = "urgency-classifier"
+version = "0.1.0"
+description = "NLP + ONNX + FastAPI system that classifies medical reports into urgency levels"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    # Core ML
+    "numpy>=1.24,<2.0",
+    "ml-dtypes>=0.5",
+    "scikit-learn>=1.4",
+    "scipy>=1.10",
+    # NLP
+    "pandas>=2.1",
+    # Inference optimization
+    "onnxruntime>=1.17",
+    "skl2onnx>=1.16",
+    "onnx>=1.15",
+    # API
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "pydantic>=2.6",
+    # Observability
+    "prometheus-client>=0.20",
+    # CLI / config
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+    # Airflow DAG support (kept light so DAG import works in tests)
+    "apache-airflow>=2.8,<3.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "httpx>=0.27",
+    "ruff>=0.4",
+]
+experiments = [
+    "jupyter==1.1.1",
+    "jupyterlab==4.6.3",
+    "ipykernel==7.3.0",
+    "nbconvert==7.17.1",
+    "nbformat==5.11.1",
+    "matplotlib==3.11.1",
+    "seaborn==0.13.2",
+    "pyarrow==25.0.1",
+]
+
+[tool.uv]
+package = false
+
 [tool.ruff]
 target-version = "py311"
 line-length = 100

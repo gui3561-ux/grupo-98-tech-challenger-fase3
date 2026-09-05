@@ -9,10 +9,8 @@ recomendações e próximos passos).
 ## Setup
 
 ```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt -r requirements-experiments.txt
-jupyter nbconvert --to notebook --execute --inplace notebooks/<nome>.ipynb   # para reexecutar um notebook
+uv sync --group dev --group experiments
+uv run jupyter nbconvert --to notebook --execute --inplace notebooks/<nome>.ipynb   # para reexecutar um notebook
 ```
 
 ## Ordem e dependências entre notebooks
