@@ -26,6 +26,9 @@ dependencies = [
     "python-dotenv>=1.0",
     # Airflow DAG support (kept light so DAG import works in tests)
     "apache-airflow>=2.8,<3.0",
+    "matplotlib>=3.11.1",
+    "seaborn>=0.13.2",
+    "pyarrow>=25.0.1",
 ]
 
 [dependency-groups]
