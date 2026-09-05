@@ -6,25 +6,26 @@ for the full write-up and architecture table.
 
 ## Commands (run from repo root)
 
+Dependency management uses [uv](https://docs.astral.sh/uv/) (`pyproject.toml` + `uv.lock`); there is no `requirements.txt` anymore.
+
 ```bash
-python3.11 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+uv sync --group dev   # creates .venv, installs runtime + dev deps (pytest/httpx/ruff)
 cp .env.example .env
 
-ruff check .          # lint (CI)
-pytest --tb=short     # tests (CI); testpaths=tests, quiet by default
+uv run ruff check .          # lint (CI)
+uv run pytest --tb=short     # tests (CI); testpaths=tests, quiet by default
 ```
 
 ML pipeline CLI — order matters (`generate-data` → `train` → `convert-onnx` → `benchmark`):
 
 ```bash
-python -m src.cli.main generate-data   # writes data/laudos.csv (2000 synthetic rows)
-python -m src.cli.main train           # TF-IDF + RandomForest -> models/*.joblib
-python -m src.cli.main convert-onnx    # -> models/urgency_classifier.onnx
-python -m src.cli.main benchmark       # -> reports/benchmark_report.json
+uv run python -m src.cli.main generate-data   # writes data/laudos.csv (2000 synthetic rows)
+uv run python -m src.cli.main train           # TF-IDF + RandomForest -> models/*.joblib
+uv run python -m src.cli.main convert-onnx    # -> models/urgency_classifier.onnx
+uv run python -m src.cli.main benchmark       # -> reports/benchmark_report.json
 ```
 
-API dev server: `uvicorn src.api.main:app --reload` (needs `models/urgency_classifier.onnx` to exist or `/predict` fails).
+API dev server: `uv run uvicorn src.api.main:app --reload` (needs `models/urgency_classifier.onnx` to exist or `/predict` fails).
 
 ## Key facts an agent would miss
 
