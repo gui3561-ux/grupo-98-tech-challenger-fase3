@@ -1,109 +1,100 @@
 {
+  "strategy": "strategy02_urgency",
   "models": {
     "RandomForest (baseline)": {
       "dataset": "medical_abstracts",
-      "variant": "clean_split",
-      "n_train": 11550,
-      "n_test": 1878,
-      "accuracy": 0.7295,
-      "macro_f1": 0.7118,
-      "weighted_f1": 0.7257,
+      "variant": "strategy02_urgency",
+      "n_train": 8981,
+      "n_test": 2246,
+      "accuracy": 0.7306,
+      "macro_f1": 0.7197,
+      "weighted_f1": 0.723,
       "per_class_f1": {
-        "cardiovascular diseases": 0.8172,
-        "digestive system diseases": 0.6713,
-        "general pathological conditions": 0.6217,
-        "neoplasms": 0.8459,
-        "nervous system diseases": 0.6028,
-        "macro avg": 0.7118,
-        "weighted avg": 0.7257
+        "atencao": 0.8098,
+        "normal": 0.5728,
+        "urgente": 0.7765,
+        "macro avg": 0.7197,
+        "weighted avg": 0.723
       },
       "per_class_recall": {
-        "cardiovascular diseases": 0.8578,
-        "digestive system diseases": 0.5843,
-        "general pathological conditions": 0.649,
-        "neoplasms": 0.8721,
-        "nervous system diseases": 0.5099,
-        "macro avg": 0.6946,
-        "weighted avg": 0.7295
+        "atencao": 0.8596,
+        "normal": 0.5112,
+        "urgente": 0.8066,
+        "macro avg": 0.7258,
+        "weighted avg": 0.7306
       },
-      "train_time_s": 20.894,
-      "inference_latency_ms_mean": 13.838,
-      "inference_latency_ms_p95": 14.2619,
-      "model_size_kb": 128658.9,
+      "train_time_s": 3.512,
+      "inference_latency_ms_mean": 14.5758,
+      "inference_latency_ms_p95": 16.2133,
+      "model_size_kb": 65952.7,
       "cv_macro_f1_mean": null,
       "cv_macro_f1_std": null,
-      "cv_note": "não recalculada nesta rodada (RF já é caro: ~21s/fit); número reaproveitado do notebook 03 mesmo split/seed"
+      "cv_note": "não recalculada nesta rodada; número reaproveitado do notebook 04, mesmo split/seed"
     },
     "LogisticRegression": {
-      "accuracy": 0.7268,
-      "macro_f1": 0.7204,
-      "weighted_f1": 0.7294,
+      "accuracy": 0.7324,
+      "macro_f1": 0.7286,
+      "weighted_f1": 0.7313,
       "per_class_f1": {
-        "cardiovascular diseases": 0.7885,
-        "digestive system diseases": 0.6996,
-        "general pathological conditions": 0.6562,
-        "neoplasms": 0.8182,
-        "nervous system diseases": 0.6395,
-        "macro avg": 0.7204,
-        "weighted avg": 0.7294
+        "atencao": 0.8016,
+        "normal": 0.6099,
+        "urgente": 0.7744,
+        "macro avg": 0.7286,
+        "weighted avg": 0.7313
       },
-      "cv_macro_f1_mean": 0.5662,
-      "cv_macro_f1_std": 0.0064,
-      "train_time_s": 2.892,
-      "inference_latency_ms_mean": 0.3944,
-      "inference_latency_ms_p95": 0.4628,
-      "model_size_kb": 388.7
+      "cv_macro_f1_mean": 0.7178,
+      "cv_macro_f1_std": 0.0034,
+      "train_time_s": 2.053,
+      "inference_latency_ms_mean": 0.3744,
+      "inference_latency_ms_p95": 0.4241,
+      "model_size_kb": 310.0
     },
     "LinearSVC": {
-      "accuracy": 0.721,
-      "macro_f1": 0.7166,
-      "weighted_f1": 0.7221,
+      "accuracy": 0.703,
+      "macro_f1": 0.6996,
+      "weighted_f1": 0.7022,
       "per_class_f1": {
-        "cardiovascular diseases": 0.7778,
-        "digestive system diseases": 0.6965,
-        "general pathological conditions": 0.6438,
-        "neoplasms": 0.8013,
-        "nervous system diseases": 0.6638,
-        "macro avg": 0.7166,
-        "weighted avg": 0.7221
+        "atencao": 0.7759,
+        "normal": 0.5822,
+        "urgente": 0.7408,
+        "macro avg": 0.6996,
+        "weighted avg": 0.7022
       },
-      "cv_macro_f1_mean": 0.5183,
-      "cv_macro_f1_std": 0.004,
-      "train_time_s": 2.609,
-      "inference_latency_ms_mean": 0.3992,
-      "inference_latency_ms_p95": 0.4643,
-      "model_size_kb": 388.6
+      "cv_macro_f1_mean": 0.6863,
+      "cv_macro_f1_std": 0.0095,
+      "train_time_s": 2.025,
+      "inference_latency_ms_mean": 0.4137,
+      "inference_latency_ms_p95": 0.473,
+      "model_size_kb": 309.9
     },
     "MultinomialNB": {
-      "accuracy": 0.6991,
-      "macro_f1": 0.6777,
-      "weighted_f1": 0.6978,
+      "accuracy": 0.7155,
+      "macro_f1": 0.7069,
+      "weighted_f1": 0.71,
       "per_class_f1": {
-        "cardiovascular diseases": 0.7959,
-        "digestive system diseases": 0.5737,
-        "general pathological conditions": 0.6085,
-        "neoplasms": 0.8008,
-        "nervous system diseases": 0.6095,
-        "macro avg": 0.6777,
-        "weighted avg": 0.6978
+        "atencao": 0.7896,
+        "normal": 0.5688,
+        "urgente": 0.7623,
+        "macro avg": 0.7069,
+        "weighted avg": 0.71
       },
-      "cv_macro_f1_mean": 0.5451,
-      "cv_macro_f1_std": 0.0107,
-      "train_time_s": 2.225,
-      "inference_latency_ms_mean": 0.4074,
-      "inference_latency_ms_p95": 0.472,
-      "model_size_kb": 584.3
+      "cv_macro_f1_mean": 0.6892,
+      "cv_macro_f1_std": 0.0017,
+      "train_time_s": 1.815,
+      "inference_latency_ms_mean": 0.3975,
+      "inference_latency_ms_p95": 0.4685,
+      "model_size_kb": 427.0
     }
   },
   "best_model_by_macro_f1": "LogisticRegression",
   "worst_classes": {
-    "nervous system diseases": 0.6395,
-    "general pathological conditions": 0.6562
+    "normal": 0.6099,
+    "urgente": 0.7744
   },
   "preprocessing_ablation": {
-    "baseline (max_features=5000, (1,2), stopwords en)": 0.7203981897471703,
-    "sem remoção de stopwords": 0.6977294588457725,
-    "só unigramas (1,1)": 0.7194431618047041,
-    "vocabulário maior (max_features=20000)": 0.716013057230504
+    "baseline (max_features=5000, (1,2), stopwords en)": 0.7286194508856894,
+    "sem remoção de stopwords": 0.7201361480292067,
+    "só unigramas (1,1)": 0.7270710281233083,
+    "vocabulário maior (max_features=20000)": 0.7362461346972203
   }
 }
