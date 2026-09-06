@@ -1,24 +1,22 @@
 {
-  "recommended_dataset": "medical_abstracts_tc_corpus",
-  "recommended_target": "condition_label (5 classes de especialidade médica)",
-  "reason": "autorização explícita do professor para aceitar classificação de condição médica no lugar de urgência neste dataset; sem essa restrição, Medical Abstracts é superior em volume, diversidade e realismo, e o baseline honesto (split limpo) é uma medida real de dificuldade, não um número inflado por vazamento/trivialidade como no dataset sintético",
-  "scope_change_authorized_by": "professor (registrado em conversa com a equipe)",
-  "production_migration_decided": false,
-  "key_evidence": {
-    "medabs_volume": 14438,
-    "medabs_text_diversity_ratio": 0.7776,
-    "medabs_clean_accuracy": 0.7295,
-    "medabs_clean_macro_f1": 0.7118,
-    "medabs_model_size_kb": 128658.9,
-    "laudos_naive_accuracy": 1.0,
-    "laudos_dedup_accuracy": 1.0,
-    "laudos_text_diversity_ratio": 0.0535,
-    "laudos_model_size_kb": 598.6
+  "strategy02": {
+    "target": "urgency (3 classes)",
+    "accuracy": 0.7306,
+    "macro_f1": 0.7197,
+    "train_time_s": 3.512,
+    "model_size_kb": 65952.7,
+    "matches_challenge_target_literally": true
   },
-  "open_limitations": [
-    "modelo ~215x maior que o do dataset sintético",
-    "35% de overlap ambíguo entre train/test oficiais — usar sempre o split limpo",
-    "corpus em inglês, resto do projeto em português",
-    "migração de produção (API/Airflow/Docker) ainda não decidida — decisão pós Fase B"
-  ]
+  "strategy03": {
+    "target": "condition_label (5 classes)",
+    "accuracy": 0.7295,
+    "macro_f1": 0.7118,
+    "train_time_s": 22.716,
+    "model_size_kb": 128658.9,
+    "matches_challenge_target_literally": false,
+    "requires_explicit_exception": "aceitar condição médica no lugar de urgência"
+  },
+  "metrics_verdict": "empate estatístico (diferença < 1 p.p. em accuracy e macro F1)",
+  "decisive_factor": "produto/enunciado (qual target faz sentido), não performance de modelo",
+  "recommended_strategy": null
 }

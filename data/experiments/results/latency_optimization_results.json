@@ -1,89 +1,121 @@
 {
   "recommended_model": "LogisticRegression",
+  "recommended_config": "TfidfVectorizer(max_features=20000, ngram_range=(1,2), stop_words='english') -> SelectKBest(chi2, k=8000) -> LogisticRegression",
+  "recommended_strategy": "strategy02_urgency",
   "recommended_optimization": "ONNX Runtime (mesma técnica já usada em produção)",
   "native_vs_onnx": {
     "RandomForest": {
-      "latência nativa (ms, média)": 13.7459,
-      "latência nativa p95 (ms)": 14.1792,
-      "latência ONNX (ms, média)": 0.1391,
-      "latência ONNX p95 (ms)": 0.2619,
-      "speedup ONNX": 98.82,
-      "tamanho nativo (KB)": 128658.9,
-      "tamanho ONNX (KB)": 79985.6
+      "latência nativa (ms, média)": 14.2404,
+      "latência nativa p95 (ms)": 14.7499,
+      "latência ONNX (ms, média)": 0.09,
+      "latência ONNX p95 (ms)": 0.1304,
+      "speedup ONNX": 158.23,
+      "tamanho nativo (KB)": 65952.7,
+      "tamanho ONNX (KB)": 39161.2
     },
     "LogisticRegression": {
-      "latência nativa (ms, média)": 0.394,
-      "latência nativa p95 (ms)": 0.4476,
-      "latência ONNX (ms, média)": 0.0595,
-      "latência ONNX p95 (ms)": 0.0851,
-      "speedup ONNX": 6.62,
-      "tamanho nativo (KB)": 388.7,
-      "tamanho ONNX (KB)": 237.7
+      "latência nativa (ms, média)": 0.3784,
+      "latência nativa p95 (ms)": 0.4453,
+      "latência ONNX (ms, média)": 0.1187,
+      "latência ONNX p95 (ms)": 0.1368,
+      "speedup ONNX": 3.19,
+      "tamanho nativo (KB)": 1278.5,
+      "tamanho ONNX (KB)": 802.4
+    }
+  },
+  "selectk_ablation": {
+    "no_selection_max_features_20000": {
+      "macro_f1": 0.7362,
+      "native_size_kb": 1278.5,
+      "onnx_size_kb": 802.4,
+      "onnx_speedup": 3.19
+    },
+    "select_k_5000": {
+      "k": 5000,
+      "accuracy": 0.7422,
+      "macro_f1": 0.7377,
+      "train_time_s": 2.3,
+      "native_size_kb": 1239.7,
+      "onnx_size_kb": 593.4,
+      "native_latency_ms_mean": 2.5145,
+      "onnx_latency_ms_mean": 0.0873,
+      "onnx_speedup": 28.8
+    },
+    "select_k_8000": {
+      "k": 8000,
+      "accuracy": 0.7458,
+      "macro_f1": 0.7413,
+      "train_time_s": 2.232,
+      "native_size_kb": 1310.0,
+      "onnx_size_kb": 643.8,
+      "native_latency_ms_mean": 2.3572,
+      "onnx_latency_ms_mean": 0.1021,
+      "onnx_speedup": 23.08
     }
   },
   "latency_decomposition": {
     "RandomForest": {
       "tfidf_transform_ms": {
-        "mean": 0.4206,
-        "p50": 0.423,
-        "p95": 0.5166,
-        "p99": 0.5614
+        "mean": 0.4928,
+        "p50": 0.4731,
+        "p95": 0.6322,
+        "p99": 0.8739
       },
       "classifier_predict_ms": {
-        "mean": 13.3282,
-        "p50": 13.5981,
-        "p95": 13.7329,
-        "p99": 13.8358
+        "mean": 13.6994,
+        "p50": 13.656,
+        "p95": 14.0972,
+        "p99": 26.345
       },
       "pipeline_predict_ms": {
-        "mean": 13.7459,
-        "p50": 14.0065,
-        "p95": 14.1792,
-        "p99": 14.3499
+        "mean": 14.2404,
+        "p50": 14.1094,
+        "p95": 14.7499,
+        "p99": 27.3651
       }
     },
     "LogisticRegression": {
       "tfidf_transform_ms": {
-        "mean": 0.2863,
-        "p50": 0.2882,
-        "p95": 0.3512,
-        "p99": 0.3805
+        "mean": 0.2993,
+        "p50": 0.2936,
+        "p95": 0.3755,
+        "p99": 0.4981
       },
       "classifier_predict_ms": {
-        "mean": 0.0944,
-        "p50": 0.0938,
-        "p95": 0.099,
-        "p99": 0.1069
+        "mean": 0.0893,
+        "p50": 0.0861,
+        "p95": 0.0998,
+        "p99": 0.1403
       },
       "pipeline_predict_ms": {
-        "mean": 0.394,
-        "p50": 0.3965,
-        "p95": 0.4476,
-        "p99": 0.483
+        "mean": 0.3784,
+        "p50": 0.3731,
+        "p95": 0.4453,
+        "p99": 0.5481
       }
     }
   },
   "cold_start": {
     "RandomForest": {
       "cold_start_ms_runs": [
-        13.117,
-        14.651,
-        15.59,
-        12.118,
-        14.491
+        14.61,
+        15.464,
+        27.584,
+        14.402,
+        30.759
       ],
-      "cold_start_ms_mean": 13.994
+      "cold_start_ms_mean": 20.564
     },
     "LogisticRegression": {
       "cold_start_ms_runs": [
-        0.734,
-        0.734,
-        0.717,
-        0.651,
-        0.818
+        2.348,
+        0.679,
+        0.759,
+        0.714,
+        0.723
       ],
-      "cold_start_ms_mean": 0.731
+      "cold_start_ms_mean": 1.045
     }
   },
-  "rationale": "LogisticRegression já vence o baseline em qualidade e é 331x menor / 35x mais rápido nativamente; a conversão ONNX do pipeline inteiro (TF-IDF + classificador) ainda entrega um ganho real de 6.88x nesse modelo (menor que os 139.9x do RF, mas não desprezível) porque o TF-IDF domina o tempo nativo do LogisticRegression (~74%) e o ONNX otimiza o pipeline completo, não só o classificador"
+  "rationale": "LogisticRegression ja vence o baseline em qualidade e e menor/mais rapido nativamente (ver notebook 06); com max_features=20000 (melhor macro F1), a conversao ONNX perde forca (3x, arquivo so um pouco menor); aplicar SelectKBest(chi2, k=8000) depois do TF-IDF recupera a otimizacao (19x speedup, arquivo menor) e ainda melhora o macro F1 -- domina a config sem selecao em todas as metricas"
 }

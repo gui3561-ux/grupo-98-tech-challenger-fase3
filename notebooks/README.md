@@ -1,4 +1,4 @@
-# Notebooks — EDA e experimentação (branch `experiment/eda-model-selection`)
+# Notebooks — EDA e experimentação (branch `feat/eda-dataset`)
 
 Área de **exploração e experimentação**. Nada aqui é código de produção; nada nesta branch altera `src/`,
 `Dockerfile`, `docker-compose.yml`, `airflow/` ou `.github/workflows/`. Ver [`EXPERIMENT_REPORT.md`](EXPERIMENT_REPORT.md)
@@ -18,11 +18,12 @@ uv run jupyter nbconvert --to notebook --execute --inplace notebooks/<nome>.ipyn
 | Notebook | Depende de | Produz |
 |---|---|---|
 | `01_eda_laudos_sinteticos.ipynb` | `data/laudos.csv` (já no repo) | `data/experiments/results/eda_laudos_summary.json` |
-| `02_eda_medical_abstracts.ipynb` | `data/experiments/medical_abstracts/*.parquet` (ver `SOURCE.md` na mesma pasta) | `data/experiments/results/eda_medical_abstracts_summary.json` |
-| `03_baseline_models.ipynb` | `data/laudos.csv`, `data/experiments/medical_abstracts/*.parquet` | `data/experiments/results/baseline_results.json` |
-| `04_dataset_comparison.ipynb` | os 3 JSONs acima | `data/experiments/results/dataset_recommendation.json` |
-| `05_model_comparison.ipynb` | `data/experiments/medical_abstracts/*.parquet`, `baseline_results.json` | `data/experiments/results/model_comparison_results.json` |
-| `06_final_benchmark.ipynb` | `model_comparison_results.json` | `data/experiments/results/latency_optimization_results.json` |
+| `02_eda_medical_abstracts.ipynb` | `data/experiments/medical_abstracts/*.parquet` (ver `SOURCE.md` na mesma pasta) | `data/processed/train.csv`, `data/processed/test.csv` (estratégia 02 — target `urgency`) |
+| `03_eda_medical_abstracts_second_strategy.ipynb` | `data/experiments/medical_abstracts/*.parquet` | `data/experiments/results/eda_medical_abstracts_summary.json` (estratégia 03 — target `condition_label`) |
+| `04_baseline_models.ipynb` | `data/processed/*.csv`, `data/experiments/medical_abstracts/*.parquet` | `data/experiments/results/baseline_results.json` |
+| `05_dataset_comparison.ipynb` | `eda_medical_abstracts_summary.json`, `baseline_results.json` | `data/experiments/results/dataset_recommendation.json` |
+| `06_model_comparison.ipynb` | `data/processed/*.csv`, `baseline_results.json` | `data/experiments/results/model_comparison_results.json` |
+| `07_final_benchmark.ipynb` | `data/processed/*.csv`, `model_comparison_results.json` | `data/experiments/results/latency_optimization_results.json` |
 
 Cada notebook lê os resumos numéricos dos anteriores via JSON em `data/experiments/results/` — nenhuma
 conclusão depende de números digitados à mão em célula de markdown.
@@ -43,30 +44,54 @@ O MIMIC-III completo exige credenciamento PhysioNet (conta + treinamento CITI + 
 Agreement), fora do escopo de uma exploração automatizada. Combinado com o time, a comparação passou a ser
 **dataset sintético atual (`data/laudos.csv`) vs. Medical Abstracts TC Corpus**.
 
-## Sobre a mudança de target (condição médica em vez de urgência)
+## Duas estratégias de target para o Medical Abstracts TC Corpus
 
-A recomendação original do notebook 04 era manter `data/laudos.csv` (único com target de urgência nativo). O
-professor autorizou explicitamente, para o Medical Abstracts TC Corpus, aceitar **classificação de condição
-médica** (5 classes de especialidade) no lugar de urgência. Isso removeu a objeção principal contra esse
-dataset, e a recomendação foi revisada (ver notebook 04 e `data/experiments/results/dataset_recommendation.json`):
-**Medical Abstracts TC Corpus passa a ser o dataset principal desta linha de experimentação, com
-`condition_label` como target**. A decisão anterior (manter laudos sintéticos) e o raciocínio completo por trás
-da mudança ficam documentados no próprio notebook 04 (a versão anterior é visível no histórico do Git); o JSON
-de saída reflete só a decisão final.
+O Medical Abstracts TC Corpus não possui nativamente o target de **urgência** (normal/atenção/urgente) exigido
+pelo enunciado do Tech Challenge — o target nativo do corpus é `condition_label` (5 classes de especialidade
+clínica: neoplasms, digestive system diseases, nervous system diseases, cardiovascular diseases, general
+pathological conditions). Para decidir como lidar com essa lacuna, duas estratégias foram exploradas e
+comparadas lado a lado, com a mesma configuração de baseline (TF-IDF + RandomForest), para que a diferença de
+métrica refletisse a estratégia de dado, não a configuração de modelo:
 
-Importante: isso é uma decisão para os **experimentos desta branch**. Migrar a API/Airflow/Docker de produção
-do target de urgência para condição médica é uma decisão de escopo maior, ainda não tomada — ver
-[`EXPERIMENT_REPORT.md`](EXPERIMENT_REPORT.md), seção 15 (Próximos passos).
+- **Estratégia 02** (`02_eda_medical_abstracts.ipynb`): mapeia `condition_label` → `urgency` (3 classes),
+  batendo literalmente com o target pedido pelo enunciado. Usa um split próprio, estratificado sobre o corpus
+  já deduplicado (11.227 abstracts únicos), com verificação explícita de que treino e teste não compartilham
+  nenhum texto exato.
+- **Estratégia 03** (`03_eda_medical_abstracts_second_strategy.ipynb`): mantém `condition_label` nativo
+  (5 classes). Usa o split oficial da fonte, mas quantifica um problema sério nele: ~35% das linhas de teste
+  têm texto idêntico ao treino, e **100%** desses pares têm rótulo divergente entre os dois splits — o mesmo
+  abstract aparece com uma classe no treino e outra no teste. O notebook `04_baseline_models.ipynb` remove esses
+  pares ambíguos do teste antes de medir a performance "honesta" dessa estratégia.
+
+**Resultado da comparação (`04_baseline_models.ipynb` e `05_dataset_comparison.ipynb`):** as duas estratégias
+empatam em qualidade de classificação (accuracy ~73%, macro F1 0,71–0,72) — a diferença é menor que 1 ponto
+percentual, dentro do ruído esperado entre splits diferentes. A Estratégia 02 treina ~6,5× mais rápido e gera um
+modelo quase 2× menor (menos classes, menos linhas de treino), mas a diferença decisiva não é de métrica: é que
+a Estratégia 02 entrega o target de urgência pedido literalmente pelo enunciado, sem precisar de nenhuma
+exceção, enquanto a Estratégia 03 exigiria aceitar `condition_label` como substituto de urgência.
+
+**Decisão final:** com as métricas empatadas, a equipe optou pela **Estratégia 02 (urgência, 3 classes)** como
+target oficial dos experimentos desta branch — ver `data/experiments/results/dataset_recommendation.json`. Os
+notebooks `06_model_comparison.ipynb` e `07_final_benchmark.ipynb` usam essa estratégia. Os achados da
+Estratégia 03 (vazamento no split oficial, inconsistência de rótulo) continuam documentados e relevantes caso a
+equipe reconsidere `condition_label` como target no futuro.
 
 ## Fase B — comparação de modelos e otimização (concluída)
 
-- `05_model_comparison.ipynb`: `LogisticRegression`, `LinearSVC` e `MultinomialNB` comparados ao baseline
-  RandomForest via validação cruzada (3 folds) no treino + avaliação única no teste limpo, error analysis por
-  classe e ablação de preprocessing. **Achado principal:** `LogisticRegression` vence o baseline em macro F1
-  sendo 331× menor e ~35× mais rápido nativamente.
-- `06_final_benchmark.ipynb`: latência decomposta (preprocessing vs. classificador, cold vs. warm, percentis) e
-  conversão ONNX do pipeline completo. **Achado principal:** o ganho de ONNX é bem menor em `LogisticRegression`
-  (~6-7×) do que em RandomForest (~90-140×), mas ainda real (~85% de redução de latência) — recomendação final
-  de otimização.
+- `06_model_comparison.ipynb`: `LogisticRegression`, `LinearSVC` e `MultinomialNB` comparados ao baseline
+  RandomForest via validação cruzada (3 folds) no treino + avaliação única no teste, error analysis por classe
+  e ablação de preprocessing, tudo sobre a Estratégia 02 (target `urgency`). **Achado principal:**
+  `LogisticRegression` vence o baseline em macro F1 (0,7286 vs. 0,7197) sendo ~213× menor e ~39× mais rápido
+  nativamente; `LinearSVC` e `MultinomialNB` ficaram abaixo do baseline nesta estratégia. A ablação de
+  preprocessing mostrou que `max_features=20000` melhora o macro F1 (0,7362) — diferente do que se observava na
+  Estratégia 03, onde vocabulário maior piorava.
+- `07_final_benchmark.ipynb`: latência decomposta (preprocessing vs. classificador, cold vs. warm, percentis) e
+  conversão ONNX do pipeline completo. **Achado principal:** ONNX continua muito eficaz no RandomForest
+  (~158×). No `LogisticRegression` com `max_features=20000` (sem tratamento adicional) o ganho ONNX caiu para
+  ~3,2× — vocabulário maior deixa o grafo ONNX proporcionalmente maior. Aplicar `SelectKBest` (chi2, `k=8000`)
+  depois do TF-IDF de 20000 features resolve isso **sem contrapartida**: melhora o macro F1 (0,7413, acima até
+  da config sem seleção), reduz o arquivo ONNX (644KB vs. 802KB) e reduz a latência ONNX absoluta (0,10ms vs.
+  0,12ms) — configuração final recomendada, servida via ONNX (ver `EXPERIMENT_REPORT.md`, seções 11 e 14 para o
+  detalhe de por que o número de "speedup" isolado (23×) não conta a história toda).
 
 Ver [`EXPERIMENT_REPORT.md`](EXPERIMENT_REPORT.md) para o relatório consolidado com todos os números.

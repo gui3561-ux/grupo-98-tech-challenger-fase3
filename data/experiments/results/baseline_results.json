@@ -1,59 +1,5 @@
 {
-  "laudos_naive": {
-    "dataset": "laudos",
-    "variant": "naive_split",
-    "n_train": 1600,
-    "n_test": 400,
-    "accuracy": 1.0,
-    "macro_f1": 1.0,
-    "weighted_f1": 1.0,
-    "per_class_f1": {
-      "atencao": 1.0,
-      "normal": 1.0,
-      "urgente": 1.0,
-      "macro avg": 1.0,
-      "weighted avg": 1.0
-    },
-    "per_class_recall": {
-      "atencao": 1.0,
-      "normal": 1.0,
-      "urgente": 1.0,
-      "macro avg": 1.0,
-      "weighted avg": 1.0
-    },
-    "train_time_s": 0.193,
-    "inference_latency_ms_mean": 13.7769,
-    "inference_latency_ms_p95": 14.3248,
-    "model_size_kb": 598.6
-  },
-  "laudos_dedup": {
-    "dataset": "laudos",
-    "variant": "dedup_split",
-    "n_train": 85,
-    "n_test": 22,
-    "accuracy": 1.0,
-    "macro_f1": 1.0,
-    "weighted_f1": 1.0,
-    "per_class_f1": {
-      "atencao": 1.0,
-      "normal": 1.0,
-      "urgente": 1.0,
-      "macro avg": 1.0,
-      "weighted avg": 1.0
-    },
-    "per_class_recall": {
-      "atencao": 1.0,
-      "normal": 1.0,
-      "urgente": 1.0,
-      "macro avg": 1.0,
-      "weighted avg": 1.0
-    },
-    "train_time_s": 0.133,
-    "inference_latency_ms_mean": 13.7659,
-    "inference_latency_ms_p95": 14.1704,
-    "model_size_kb": 520.0
-  },
-  "medabs_official": {
+  "strategy03_official": {
     "dataset": "medical_abstracts",
     "variant": "official_split",
     "n_train": 11550,
@@ -79,12 +25,12 @@
       "macro avg": 0.4596,
       "weighted avg": 0.4744
     },
-    "train_time_s": 21.002,
-    "inference_latency_ms_mean": 13.8498,
-    "inference_latency_ms_p95": 14.3374,
+    "train_time_s": 22.059,
+    "inference_latency_ms_mean": 14.0987,
+    "inference_latency_ms_p95": 14.6193,
     "model_size_kb": 128658.9
   },
-  "medabs_clean": {
+  "strategy03_clean": {
     "dataset": "medical_abstracts",
     "variant": "clean_split",
     "n_train": 11550,
@@ -110,9 +56,36 @@
       "macro avg": 0.6946,
       "weighted avg": 0.7295
     },
-    "train_time_s": 20.894,
-    "inference_latency_ms_mean": 13.838,
-    "inference_latency_ms_p95": 14.2619,
+    "train_time_s": 22.716,
+    "inference_latency_ms_mean": 14.3497,
+    "inference_latency_ms_p95": 15.2021,
     "model_size_kb": 128658.9
+  },
+  "strategy02_urgency": {
+    "dataset": "medical_abstracts",
+    "variant": "strategy02_urgency",
+    "n_train": 8981,
+    "n_test": 2246,
+    "accuracy": 0.7306,
+    "macro_f1": 0.7197,
+    "weighted_f1": 0.723,
+    "per_class_f1": {
+      "atencao": 0.8098,
+      "normal": 0.5728,
+      "urgente": 0.7765,
+      "macro avg": 0.7197,
+      "weighted avg": 0.723
+    },
+    "per_class_recall": {
+      "atencao": 0.8596,
+      "normal": 0.5112,
+      "urgente": 0.8066,
+      "macro avg": 0.7258,
+      "weighted avg": 0.7306
+    },
+    "train_time_s": 3.512,
+    "inference_latency_ms_mean": 14.5758,
+    "inference_latency_ms_p95": 16.2133,
+    "model_size_kb": 65952.7
   }
 }
