@@ -1,57 +1,61 @@
 {
-  "dashboard": {
-    "id": null,
-    "title": "Triagem de Laudos Médicos",
-    "tags": ["urgency", "ml"],
-    "timezone": "browser",
-    "schemaVersion": 27,
-    "version": 1,
-    "refresh": "5s",
-    "time": { "from": "now-5m", "to": "now" },
-    "panels": [
-      {
-        "id": 1,
-        "type": "graph",
-        "title": "Total de Requisições por Status",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
-        "targets": [
-          {
-            "expr": "sum(rate(urgency_http_requests_total[1m])) by (status)",
-            "legendFormat": "status {{status}}"
-          }
-        ]
-      },
-      {
-        "id": 2,
-        "type": "graph",
-        "title": "Latência Média da API",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
-        "targets": [
-          {
-            "expr": "histogram_quantile(0.95, sum(rate(urgency_request_latency_ms_bucket[5m])) by (le))",
-            "legendFormat": "p95"
-          },
-          {
-            "expr": "sum(rate(urgency_request_latency_ms_sum[5m])) / sum(rate(urgency_request_latency_ms_count[5m]))",
-            "legendFormat": "mean"
-          }
-        ]
-      },
-      {
-        "id": 3,
-        "type": "graph",
-        "title": "Predições por Nível de Urgência",
-        "datasource": "Prometheus",
-        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
-        "targets": [
-          {
-            "expr": "sum(rate(urgency_predictions_total[5m])) by (level)",
-            "legendFormat": "{{level}}"
-          }
-        ]
-      }
-    ]
-  }
+  "id": null,
+  "uid": "urgency-triagem",
+  "title": "Triagem de Laudos Médicos",
+  "tags": ["urgency", "ml"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-5m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Total de Requisições por Status",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum(rate(urgency_http_requests_total[1m])) by (status)",
+          "legendFormat": "status {{status}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Latência da API (p95 e média)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "histogram_quantile(0.95, sum(rate(urgency_request_latency_ms_bucket[5m])) by (le))",
+          "legendFormat": "p95"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum(rate(urgency_request_latency_ms_sum[5m])) / sum(rate(urgency_request_latency_ms_count[5m]))",
+          "legendFormat": "mean"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Predições por Nível de Urgência",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum(rate(urgency_predictions_total[5m])) by (level)",
+          "legendFormat": "{{level}}"
+        }
+      ]
+    }
+  ]
 }
