@@ -8,7 +8,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 
 from src.core.config import Settings
-from src.services.data_generator import SyntheticDataGenerator
+from src.services.medical_abstracts_loader import MedicalAbstractsLoader
 from src.services.onnx_converter import ONNXConverter
 from src.services.trainer import ModelTrainer
 
@@ -30,11 +30,9 @@ dag = DAG(
 
 def _ingest_data(**context: Any) -> str:
     settings: Settings = context["settings"]
-    generator = SyntheticDataGenerator(
-        n_samples=settings.n_samples, random_state=settings.random_state
-    )
-    output = settings.data_dir / "laudos.csv"
-    generator.save(output)
+    loader = MedicalAbstractsLoader(settings.medical_abstracts_dir)
+    output = settings.data_dir / "medical_reports.csv"
+    loader.save(output)
     return str(output)
 
 

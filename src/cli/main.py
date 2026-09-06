@@ -6,7 +6,7 @@ from pathlib import Path
 from src.core.config import Settings
 from src.infrastructure.predictors import ONNXInference, ScikitLearnInference
 from src.services.benchmark import InferenceBenchmarker
-from src.services.data_generator import SyntheticDataGenerator
+from src.services.medical_abstracts_loader import MedicalAbstractsLoader
 from src.services.onnx_converter import ONNXConverter
 from src.services.trainer import ModelTrainer
 
@@ -15,7 +15,9 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="ml-pipeline", description="Pipeline de ML para triagem.")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    generate = sub.add_parser("generate-data", help="Gera dataset sintético.")
+    generate = sub.add_parser(
+        "generate-data", help="Carrega e mapeia o Medical Abstracts TC Corpus para urgência."
+    )
     generate.add_argument("--output", type=Path, default=None)
 
     train = sub.add_parser("train", help="Treina o modelo Scikit-Learn.")
@@ -35,13 +37,13 @@ def _build_parser() -> argparse.ArgumentParser:
 
 def _resolve_data(settings: Settings) -> Path:
     candidates = [
-        settings.data_dir / "laudos.csv",
         settings.data_dir / "medical_reports.csv",
+        settings.data_dir / "laudos.csv",
     ]
     for candidate in candidates:
         if candidate.exists():
             return candidate
-    return settings.data_dir / "laudos.csv"
+    return settings.data_dir / "medical_reports.csv"
 
 
 def _load_sample_texts(settings: Settings, data_path: Path) -> list[str]:
@@ -52,11 +54,9 @@ def _load_sample_texts(settings: Settings, data_path: Path) -> list[str]:
 
 
 def cmd_generate_data(args: argparse.Namespace, settings: Settings) -> None:
-    output = args.output or (settings.data_dir / "laudos.csv")
-    generator = SyntheticDataGenerator(
-        n_samples=settings.n_samples, random_state=settings.random_state
-    )
-    generator.save(output)
+    output = args.output or (settings.data_dir / "medical_reports.csv")
+    loader = MedicalAbstractsLoader(settings.medical_abstracts_dir)
+    loader.save(output)
     print(f"Dataset gerado em {output}")
 
 

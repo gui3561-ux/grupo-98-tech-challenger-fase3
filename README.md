@@ -5,9 +5,16 @@
 
 Sistema automatizado de triagem de laudos médicos em três categorias de urgência
 (`normal`, `atencao`, `urgente`), construído com princípios SOLID, Clean Code e
-arquitetura em camadas. Utiliza NLP leve (TF-IDF + Random Forest), otimização de
-inferência com **ONNX Runtime**, serviço via **FastAPI**, observabilidade com
+arquitetura em camadas. Utiliza NLP leve (TF-IDF + SelectKBest + Regressão Logística),
+otimização de inferência com **ONNX Runtime**, serviço via **FastAPI**, observabilidade com
 **Prometheus/Grafana**, orquestração com **Airflow** e CI/CD via **GitHub Actions**.
+
+> A escolha de dataset, modelo e técnica de otimização foi decidida por experimentação
+> comparativa (ver `notebooks/EXPERIMENT_REPORT.md`): **Medical Abstracts TC Corpus** (real,
+> 11.227 abstracts únicos, `condition_label` mapeado para urgência) no lugar de um dataset
+> sintético anterior (que tinha vazamento severo e baixíssima diversidade textual), e
+> `LogisticRegression` no lugar do `RandomForest` sugerido como baseline pelo enunciado — vence
+> em macro F1 sendo ~213× menor e ~39× mais rápido nativamente.
 
 ---
 
@@ -182,8 +189,8 @@ O pipeline é exposto pelo módulo CLI (`python -m src.cli.main`):
 
 | Comando | Descrição |
 |---------|-----------|
-| `generate-data` | Gera **2.000** laudos sintéticos (50% normal, 30% atenção, 20% urgente) → `data/laudos.csv` |
-| `train` | Treina pipeline **TF-IDF + Random Forest** e salva `.joblib` |
+| `generate-data` | Carrega e mapeia o **Medical Abstracts TC Corpus** (`condition_label` → urgência) → `data/medical_reports.csv` |
+| `train` | Treina pipeline **TF-IDF + SelectKBest + Regressão Logística** e salva `.joblib` |
 | `convert-onnx` | Converte o pipeline em **ONNX** (opset 17, saída de probabilidades) |
 | `benchmark` | Compara latência **Scikit vs ONNX** e gera relatório JSON |
 
@@ -259,7 +266,7 @@ com 3 painéis:
 
 A DAG `retrain_dag` (`airflow/dags/retrain_dag.py`) executa diariamente:
 
-1. `ingest_data` → gera/atualiza o dataset sintético
+1. `ingest_data` → carrega e mapeia o Medical Abstracts TC Corpus
 2. `train_model` → treina o pipeline base
 3. `convert_onnx` → converte para ONNX e salva
 
@@ -299,19 +306,21 @@ Ambiente: `ubuntu-latest`, Python `3.11`, com cache de dependências pip.
 
 ## 📊 Resultados de Latência
 
-Benchmark executado no pipeline real (2.000 amostras, 200 runs + 20 warmup):
+Benchmark executado no pipeline real (Medical Abstracts TC Corpus, 200 runs + 20 warmup):
 
 | Métrica | Nativo (Scikit) | Otimizado (ONNX) | Speedup |
 |---------|-----------------|------------------|---------|
-| **Média** | 14.31 ms | 0.0143 ms | **~1000×** |
-| **p95** | 14.75 ms | 0.0172 ms | ~857× |
-| **Mín** | 11.54 ms | 0.0118 ms | — |
-| **Máx** | 183.03 ms | 0.3313 ms | ~553× |
+| **Média** | 2.30 ms | 0.099 ms | **~23×** |
+| **p95** | 2.46 ms | 0.140 ms | ~18× |
+| **Mín** | 2.15 ms | 0.071 ms | — |
+| **Máx** | 32.43 ms | 0.252 ms | ~129× |
 
 > **Interpretação:** para **inferência de amostra única** (caso de uso em tempo
-> real), o ONNX Runtime entrega uma redução de latência de **cerca de 3 ordens de
-> grandeza**, mantendo a mesma acurácia, pois o modelo serializado é idêntico.
-> Isso viabiliza a triagem síncrona dentro do SLA de um pronto-socorro.
+> real), o ONNX Runtime entrega uma redução de latência substancial, mantendo a mesma
+> acurácia, pois o modelo serializado é idêntico. Isso viabiliza a triagem síncrona dentro
+> do SLA de um pronto-socorro. O ganho relativo aqui é menor do que o baseline RandomForest
+> (que chega a ~1000×, ver `notebooks/EXPERIMENT_REPORT.md` §11) porque a Regressão Logística
+> já é nativamente rápida (poucos milissegundos) — o ONNX ainda reduz ~96% da latência.
 
 O relatório completo fica em `reports/benchmark_report.json` após a execução.
 
@@ -331,10 +340,13 @@ O relatório completo fica em `reports/benchmark_report.json` após a execução
 > seguindo boas práticas de engenharia de software (SOLID), MLOps e CI/CD.
 
 ### **A**ction (Ação)
-> 1. **Dados:** gerei 2.000 laudos sintéticos rotulados (normal/atenção/urgente).
-> 2. **Modelo:** pipeline TF-IDF + Random Forest (Scikit-Learn).
-> 3. **Otimização:** converti para ONNX Runtime, alcançando ~1000× de redução de
->    latência em amostra única.
+> 1. **Dados:** Medical Abstracts TC Corpus (11.227 abstracts reais únicos), com
+>    `condition_label` mapeado para urgência (normal/atenção/urgente) — decisão
+>    validada por experimentação comparativa contra um dataset sintético anterior.
+> 2. **Modelo:** pipeline TF-IDF + SelectKBest + Regressão Logística (Scikit-Learn),
+>    escolhido por vencer o baseline RandomForest em macro F1 sendo ~213× menor.
+> 3. **Otimização:** converti para ONNX Runtime, reduzindo a latência de inferência
+>    em ~96% (de ~2.3ms para ~0.1ms).
 > 4. **API:** FastAPI com injeção de dependências e DTOs Pydantic v2.
 > 5. **Observabilidade:** Prometheus + Grafana (requisições por status, latência
 >    p95, predições por urgência).
@@ -342,7 +354,7 @@ O relatório completo fica em `reports/benchmark_report.json` após a execução
 > 7. **CI/CD:** GitHub Actions (ruff + pytest) a cada push/PR.
 
 ### **R**esult (Resultado)
-> API de triagem com inferência em **~0.01 ms** (ONNX vs ~14 ms nativo), endpoints
+> API de triagem com inferência em **~0.1 ms** (ONNX vs ~2.3 ms nativo), endpoints
 > documentados em Swagger, dashboards de monitoramento provisionados e pipeline
 > de retreino automatizado — pronto para deploy em tempo real na nuvem.
 

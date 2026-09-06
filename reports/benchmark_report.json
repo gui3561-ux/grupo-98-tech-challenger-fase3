@@ -1,16 +1,16 @@
 {
   "native_sklearn": {
-    "mean_ms": 14.3106,
-    "p95_ms": 14.748,
-    "min_ms": 11.5399,
-    "max_ms": 183.0315
+    "mean_ms": 2.3013,
+    "p95_ms": 2.4612,
+    "min_ms": 2.1476,
+    "max_ms": 32.4275
   },
   "optimized_onnx": {
-    "mean_ms": 0.0143,
-    "p95_ms": 0.0172,
-    "min_ms": 0.0118,
-    "max_ms": 0.3313
+    "mean_ms": 0.0988,
+    "p95_ms": 0.14,
+    "min_ms": 0.071,
+    "max_ms": 0.2516
   },
-  "speedup_x": 1004.1431,
+  "speedup_x": 23.2901,
   "n_runs": 200
 }

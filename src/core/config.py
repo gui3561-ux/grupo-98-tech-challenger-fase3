@@ -21,6 +21,11 @@ class Settings:
     data_dir: Path = field(
         default_factory=lambda: Path(os.getenv("DATA_DIR", PROJECT_ROOT / "data"))
     )
+    medical_abstracts_dir: Path = field(
+        default_factory=lambda: Path(
+            os.getenv("MEDICAL_ABSTRACTS_DIR", PROJECT_ROOT / "data" / "experiments" / "medical_abstracts")
+        )
+    )
     reports_dir: Path = field(
         default_factory=lambda: Path(os.getenv("REPORTS_DIR", PROJECT_ROOT / "reports"))
     )
