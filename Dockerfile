@@ -15,6 +15,18 @@ RUN uv sync --frozen --no-dev
 # Stage 2: imagem final da API
 FROM python:3.11-slim
 
+# onnxruntime precisa do locale en_US.UTF-8 (usado pelo operador StringNormalizer,
+# gerado pelo skl2onnx a partir do TfidfVectorizer) — sem isso a sessão ONNX falha
+# na inicialização e o container morre antes de subir a API.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends locales \
+    && sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen \
+    && locale-gen \
+    && rm -rf /var/lib/apt/lists/*
+ENV LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8
+
 WORKDIR /app
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -24,6 +36,7 @@ COPY --from=base /app/.venv /app/.venv
 
 COPY src ./src
 COPY metrics ./metrics
+COPY data/experiments/medical_abstracts ./data/experiments/medical_abstracts
 COPY scripts/entrypoint.sh ./scripts/entrypoint.sh
 RUN chmod +x scripts/entrypoint.sh
 

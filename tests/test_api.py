@@ -24,7 +24,7 @@ def client(tmp_path) -> TestClient:
     ]
     labels = ["normal", "urgente", "atencao"]
     pipeline = Pipeline(
-        [("tfidf", TfidfVectorizer()), ("clf", DecisionTreeClassifier())]
+        [("tfidf", TfidfVectorizer()), ("clf", DecisionTreeClassifier(random_state=42))]
     )
     pipeline.fit(texts, labels)
 

@@ -4,8 +4,9 @@ from pathlib import Path
 
 import joblib
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
@@ -14,7 +15,13 @@ from src.core.config import Settings
 
 
 class ModelTrainer:
-    """Treina um pipeline Scikit-Learn TF-IDF + Random Forest e o persiste."""
+    """Treina o pipeline TF-IDF + SelectKBest + LogisticRegression e o persiste.
+
+    Configuração validada em notebooks/06_model_comparison.ipynb e
+    notebooks/07_final_benchmark.ipynb: vence o baseline RandomForest em macro F1 e é ~213x
+    menor / ~39x mais rápido nativamente; `SelectKBest(chi2, k=8000)` depois do TF-IDF de 20000
+    features melhora ainda mais o macro F1 e reduz tamanho/latência do modelo convertido para ONNX.
+    """
 
     def __init__(self, settings: Settings | None = None) -> None:
         self.settings = settings or Settings()
@@ -29,13 +36,13 @@ class ModelTrainer:
     def _build_pipeline(self) -> Pipeline[list[str], np.ndarray]:
         return Pipeline(
             [
-                ("tfidf", TfidfVectorizer(max_features=5000, ngram_range=(1, 2), stop_words="english")),
+                ("tfidf", TfidfVectorizer(max_features=20000, ngram_range=(1, 2), stop_words="english")),
+                ("select", SelectKBest(chi2, k=8000)),
                 (
                     "clf",
-                    RandomForestClassifier(
-                        n_estimators=200,
+                    LogisticRegression(
+                        max_iter=1000,
                         random_state=self.settings.random_state,
-                        n_jobs=-1,
                     ),
                 ),
             ]
